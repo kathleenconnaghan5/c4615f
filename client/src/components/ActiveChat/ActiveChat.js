@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
+import { recordLastMessageSeen } from "../../store/utils/thunkCreators";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -22,8 +23,26 @@ const useStyles = makeStyles(() => ({
 
 const ActiveChat = (props) => {
   const classes = useStyles();
-  const { user } = props;
+  const { user, recordLastMessageSeen } = props;
   const conversation = props.conversation || {};
+  let mostRecentMessageFromOtherUser = null;
+  if (conversation.messages) {
+    for (let i = 0; i < conversation.messages.length; i++) {
+      let msg = conversation.messages[i];
+      if (msg.senderId === conversation.otherUser.id) {
+        mostRecentMessageFromOtherUser = msg;
+        break;
+      }
+    }
+  }
+
+  if (mostRecentMessageFromOtherUser) {
+    recordLastMessageSeen({
+      userIdThatSawMessage: user.id,
+      messageId: mostRecentMessageFromOtherUser.id,
+      conversationId: conversation.id,
+    });
+  }
 
   return (
     <Box className={classes.root}>
@@ -37,6 +56,7 @@ const ActiveChat = (props) => {
             <Messages
               messages={conversation.messages}
               otherUser={conversation.otherUser}
+              lastMessageIdOtherUserSaw={conversation.lastMessageOtherUserSaw}
               userId={user.id}
             />
             <Input
@@ -62,4 +82,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, null)(ActiveChat);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    recordLastMessageSeen: (message) => {
+      dispatch(recordLastMessageSeen(message));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ActiveChat);

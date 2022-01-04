@@ -109,6 +109,15 @@ export const postMessage = (body) => async (dispatch) => {
   }
 };
 
+export const recordLastMessageSeen = (body) => async (dispatch) => {
+  try {
+    const { data } = await axios.put("/api/conversations", body);
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
     const { data } = await axios.get(`/api/users/${searchTerm}`);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
@@ -25,10 +25,19 @@ const ActiveChat = (props) => {
   const classes = useStyles();
   const { user, recordLastMessageSeen } = props;
   const conversation = props.conversation || {};
+
   let mostRecentMessageFromOtherUser = null;
+  // set the most recent message to send to server
   if (conversation.messages) {
-    for (let i = 0; i < conversation.messages.length; i++) {
-      let msg = conversation.messages[i];
+    const sortedMessages = [...conversation.messages]
+      .sort((a, b) => {
+        if (new Date(a.createdAt) > new Date(b.createdAt)) {
+          return -1;
+        }
+        return 1;
+      });
+    for (let i = 0; i < sortedMessages.length; i++) {
+      let msg = sortedMessages[i];
       if (msg.senderId === conversation.otherUser.id) {
         mostRecentMessageFromOtherUser = msg;
         break;
@@ -36,13 +45,15 @@ const ActiveChat = (props) => {
     }
   }
 
-  if (mostRecentMessageFromOtherUser) {
-    recordLastMessageSeen({
-      userIdThatSawMessage: user.id,
-      messageId: mostRecentMessageFromOtherUser.id,
-      conversationId: conversation.id,
-    });
-  }
+  useEffect(() => {
+    if (mostRecentMessageFromOtherUser) {
+      recordLastMessageSeen({
+        userIdThatSawMessage: user.id,
+        messageId: mostRecentMessageFromOtherUser.id,
+        conversationId: conversation.id,
+      });
+    }
+  }, [mostRecentMessageFromOtherUser, conversation.id, recordLastMessageSeen, user.id]);
 
   return (
     <Box className={classes.root}>

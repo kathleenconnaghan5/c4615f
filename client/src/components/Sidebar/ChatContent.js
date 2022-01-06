@@ -18,13 +18,24 @@ const useStyles = makeStyles((theme) => ({
     color: "#9CADC8",
     letterSpacing: -0.17,
   },
+  notification: {
+    fontWeight: "bold",
+    fontSize: 12,
+    color: "#ffffff",
+    background: "#3f92ff",
+    borderRadius: 20,
+    marginLeft: 20,
+    textAlign: 'center',
+    padding:  "5px 10px",
+    height: 28
+  }
 }));
 
 const ChatContent = (props) => {
   const classes = useStyles();
 
   const { conversation } = props;
-  const { latestMessageText, otherUser } = conversation;
+  const { latestMessageText, otherUser, unreadMsgCount } = conversation;
 
   return (
     <Box className={classes.root}>
@@ -33,9 +44,13 @@ const ChatContent = (props) => {
           {otherUser.username}
         </Typography>
         <Typography className={classes.previewText}>
-          {latestMessageText}
+          {latestMessageText} 
         </Typography>
       </Box>
+        
+      { unreadMsgCount > 0 && <Box component="span" className={classes.notification}>
+        {unreadMsgCount}
+      </Box> }
     </Box>
   );
 };

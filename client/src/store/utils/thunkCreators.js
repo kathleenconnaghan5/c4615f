@@ -5,6 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  setUnreadCount
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -91,6 +92,10 @@ const sendMessage = (data, body) => {
   });
 };
 
+const sendSawMessage = (data) => {
+  socket.emit("saw-message", data);
+}
+
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (body) => async (dispatch) => {
@@ -111,7 +116,11 @@ export const postMessage = (body) => async (dispatch) => {
 
 export const recordLastMessageSeen = (body) => async (dispatch) => {
   try {
+    // set local unread message count to 0
+    dispatch(setUnreadCount(body.conversationId, 0));
+    // set unread message count in db
     const { data } = await axios.put("/api/conversations", body);
+    sendSawMessage(body);
     return data;
   } catch (error) {
     console.error(error);

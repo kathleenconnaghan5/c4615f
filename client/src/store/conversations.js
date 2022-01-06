@@ -4,6 +4,8 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
+  setCountInStore,
+  setLastMessageSeenInStore
 } from "./utils/reducerFunctions";
 
 // ACTIONS
@@ -15,6 +17,8 @@ const REMOVE_OFFLINE_USER = "REMOVE_OFFLINE_USER";
 const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
+const SET_UNREAD_COUNT = "SET_UNREAD_COUNT";
+const SAW_MESSAGE = "SAW_MESSAGE";
 
 // ACTION CREATORS
 
@@ -29,6 +33,13 @@ export const setNewMessage = (message, sender) => {
   return {
     type: SET_MESSAGE,
     payload: { message, sender: sender || null },
+  };
+};
+
+export const setSawMessage = (data) => {
+  return {
+    type: SAW_MESSAGE,
+    payload: data,
   };
 };
 
@@ -50,6 +61,13 @@ export const setSearchedUsers = (users) => {
   return {
     type: SET_SEARCHED_USERS,
     users,
+  };
+};
+
+export const setUnreadCount = (conversationId, count) => {
+  return {
+    type: SET_UNREAD_COUNT,
+    payload: { conversationId, count },
   };
 };
 
@@ -75,6 +93,8 @@ const reducer = (state = [], action) => {
       return action.conversations;
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
+    case SAW_MESSAGE:
+      return setLastMessageSeenInStore(state, action.payload);
     case ADD_ONLINE_USER: {
       return addOnlineUserToStore(state, action.id);
     }
@@ -85,6 +105,12 @@ const reducer = (state = [], action) => {
       return addSearchedUsersToStore(state, action.users);
     case CLEAR_SEARCHED_USERS:
       return state.filter((convo) => convo.id);
+    case SET_UNREAD_COUNT:
+      return setCountInStore(
+        state,
+        action.payload.conversationId,
+        action.payload.count
+      );
     case ADD_CONVERSATION:
       return addNewConvoToStore(
         state,

@@ -18,7 +18,7 @@ router.get("/", async (req, res, next) => {
           user2Id: userId,
         },
       },
-      attributes: ["id"],
+      attributes: ["id", "user1LastMessageIdSeen", "user2LastMessageIdSeen", "user1UnreadMsgCount", "user2UnreadMsgCount"],
       order: [[Message, "createdAt", "DESC"]],
       include: [
         { model: Message, order: ["createdAt", "DESC"] },
@@ -54,12 +54,20 @@ router.get("/", async (req, res, next) => {
       // set a property "otherUser" so that frontend will have easier access
       if (convoJSON.user1) {
         convoJSON.otherUser = convoJSON.user1;
+        convoJSON.unreadMsgCount = convoJSON.user2UnreadMsgCount;
+        convoJSON.lastMessageOtherUserSaw = convoJSON.user1LastMessageIdSeen;
         delete convoJSON.user1;
       } else if (convoJSON.user2) {
         convoJSON.otherUser = convoJSON.user2;
+        convoJSON.unreadMsgCount = convoJSON.user1UnreadMsgCount;
+        convoJSON.lastMessageOtherUserSaw = convoJSON.user2LastMessageIdSeen;
         delete convoJSON.user2;
       }
 
+      delete convoJSON.user1LastMessageIdSeen;
+      delete convoJSON.user2LastMessageIdSeen;
+      delete convoJSON.user1UnreadMsgCount;
+      delete convoJSON.user2UnreadMsgCount;
       // set property for online status of the other user
       if (onlineUsers.includes(convoJSON.otherUser.id)) {
         convoJSON.otherUser.online = true;
@@ -73,6 +81,34 @@ router.get("/", async (req, res, next) => {
     }
 
     res.json(conversations);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/", async (req, res, next) => {
+  try {
+    const { userIdThatSawMessage, messageId, conversationId } = req.body;
+    const conversation = await Conversation.findOne({
+      where: { id: conversationId }
+    });
+
+    if (userIdThatSawMessage === conversation.user1Id) {
+      // user 1 saw message
+      await conversation.update({
+        user1UnreadMsgCount: 0,
+        user1LastMessageIdSeen: messageId
+      });
+    } else {
+      // user 2 saw message
+      await conversation.update({
+        user2UnreadMsgCount: 0,
+        user2LastMessageIdSeen: messageId
+      });
+    }
+
+    res.json(conversation);
+
   } catch (error) {
     next(error);
   }

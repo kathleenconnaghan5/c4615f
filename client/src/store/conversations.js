@@ -4,6 +4,7 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
+  // sortMessagesFromStart,
 } from "./utils/reducerFunctions";
 
 // ACTIONS
@@ -16,7 +17,16 @@ const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
 
+// const SORT_MESSAGES = "SORT_MESSAGES";
+
 // ACTION CREATORS
+
+// export const messageSorter = (conversation) => {
+//   return {
+//     type: SORT_MESSAGES,
+//     conversation
+//   }
+// }
 
 export const gotConversations = (conversations) => {
   return {
@@ -73,6 +83,8 @@ const reducer = (state = [], action) => {
   switch (action.type) {
     case GET_CONVERSATIONS:
       return action.conversations;
+    // case SORT_MESSAGES:
+    //   return sortMessagesFromStart(state, action.payload);
     case SET_MESSAGE:
       return addMessageToStore(state, action.payload);
     case ADD_ONLINE_USER: {

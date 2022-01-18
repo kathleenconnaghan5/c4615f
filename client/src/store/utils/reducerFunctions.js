@@ -8,18 +8,32 @@ export const addMessageToStore = (state, payload) => {
       messages: [message],
     };
     newConvo.latestMessageText = message.text;
+    newConvo.messages.sort((a, b) => {
+      if (new Date(a.createdAt) > new Date(b.createdAt)) {
+        return 1;
+      }
+      return -1;
+     })
     return [...state, newConvo];
   }
 
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
       const newConvo = {...convo};
-      newConvo.messages.push(message);
+      const newMsgArray = convo.messages.slice();
+      newMsgArray.push(message)
+      newConvo.messages = newMsgArray
+      newMsgArray.sort((a, b) => {
+        if (new Date(a.createdAt) > new Date(b.createdAt)) {
+          return 1;
+        }
+        return -1;
+       })
       newConvo.latestMessageText = message.text;
       return newConvo;
     } else {
       return convo;
-    }
+    } 
   });
 };
 
@@ -68,11 +82,20 @@ export const addSearchedUsersToStore = (state, users) => {
 
 
 export const addNewConvoToStore = (state, recipientId, message) => {
+
   return state.map((convo) => {
     if (convo.otherUser.id === recipientId) {
+
       const newConvo = {...convo}
       newConvo.id = message.conversationId;
-      newConvo.messages.push(message);
+      const newMsgArray = convo.messages.slice();
+      newMsgArray.push(message)
+      newConvo.messages = newMsgArray.sort((a, b) => {
+        if (new Date(a.createdAt) > new Date(b.createdAt)) {
+          return 1;
+        }
+        return -1;
+       })
       newConvo.latestMessageText = message.text;
       return newConvo;
     } else {

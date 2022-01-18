@@ -35,7 +35,12 @@ const ActiveChat = (props) => {
           />
           <Box className={classes.chatContainer}>
             <Messages
-              messages={conversation.messages}
+              messages={conversation.messages.sort((a, b) => {
+                if (new Date(a.createdAt) > new Date(b.createdAt)) {
+                  return 1;
+                }
+                return -1;
+               })}
               otherUser={conversation.otherUser}
               userId={user.id}
             />
@@ -61,5 +66,6 @@ const mapStateToProps = (state) => {
       )
   };
 };
+
 
 export default connect(mapStateToProps, null)(ActiveChat);

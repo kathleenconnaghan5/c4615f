@@ -29,13 +29,7 @@ const ActiveChat = (props) => {
   let mostRecentMessageFromOtherUser = null;
   // set the most recent message to send to server
   if (conversation.messages) {
-    const sortedMessages = [...conversation.messages].sort((a, b) => {
-      if (new Date(a.createdAt) > new Date(b.createdAt)) {
-        return -1;
-      }
-      return 1;
-    });
-    for (let i = 0; i < sortedMessages.length; i++) {
+    for (let i = messages.length - 1; i >= 0; i--) {
       let msg = sortedMessages[i];
       if (msg.senderId === conversation.otherUser.id) {
         mostRecentMessageFromOtherUser = msg;

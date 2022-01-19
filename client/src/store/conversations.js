@@ -4,6 +4,7 @@ import {
   addSearchedUsersToStore,
   removeOfflineUserFromStore,
   addMessageToStore,
+  // sortMessagesFromStart,
 } from "./utils/reducerFunctions";
 
 // ACTIONS

@@ -11,12 +11,6 @@ const Messages = (props) => {
   return (
     <Box>
       {[...messages]
-        .sort((a, b) => {
-          if (new Date(a.createdAt) > new Date(b.createdAt)) {
-            return 1;
-          }
-          return -1;
-        })
         .map((message) => {
           const time = moment(message.createdAt).format("h:mm");
           const isLastMessageSeen = lastMessageIdOtherUserSaw === message.id;

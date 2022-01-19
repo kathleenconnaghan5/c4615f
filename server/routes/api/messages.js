@@ -14,6 +14,15 @@ router.post("/", async (req, res, next) => {
     // if we already know conversation id, we can save time and just add it to message and return
     if (conversationId) {
       const message = await Message.create({ senderId, text, conversationId });
+      const conversation = await Conversation.findOne({
+        where: { id: conversationId },
+      });
+
+      const field = recipientId === conversation.user1Id ? 'user1UnreadMsgCount' : 'user2UnreadMsgCount';
+      const newUnreadMsgCount = conversation[field] + 1;
+      await conversation.update({
+        [field]: newUnreadMsgCount
+      });
       return res.json({ message, sender });
     }
     // if we don't have conversation id, find a conversation to make sure it doesn't already exist

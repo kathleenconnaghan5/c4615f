@@ -5,6 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  setUnreadCount,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -72,13 +73,13 @@ export const logout = (id) => async (dispatch) => {
 export const fetchConversations = () => async (dispatch) => {
   try {
     const { data } = await axios.get("/api/conversations");
-    data.forEach(conversation => {
+    data.forEach((conversation) => {
       conversation.messages.sort((a, b) => {
         if (new Date(a.createdAt) > new Date(b.createdAt)) {
           return 1;
         }
         return -1;
-       });
+      });
     });
     dispatch(gotConversations(data));
   } catch (error) {
@@ -99,6 +100,10 @@ const sendMessage = (data, body) => {
   });
 };
 
+const sendSawMessage = (data) => {
+  socket.emit("saw-message", data);
+};
+
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
 export const postMessage = (body) => async (dispatch) => {
@@ -112,6 +117,18 @@ export const postMessage = (body) => async (dispatch) => {
     }
 
     sendMessage(data, body);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const recordLastMessageSeen = (body) => async (dispatch) => {
+  try {
+    // set local unread message count to 0
+    dispatch(setUnreadCount(body.conversationId, 0));
+    // set unread message count in db
+    await axios.put("/api/conversations/readStatus", body);
+    sendSawMessage(body);
   } catch (error) {
     console.error(error);
   }

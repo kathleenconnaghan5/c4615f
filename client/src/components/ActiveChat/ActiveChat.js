@@ -9,7 +9,7 @@ const useStyles = makeStyles(() => ({
   root: {
     display: "flex",
     flexGrow: 8,
-    flexDirection: "column"
+    flexDirection: "column",
   },
   chatContainer: {
     marginLeft: 41,
@@ -17,8 +17,8 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
-    justifyContent: "space-between"
-  }
+    justifyContent: "space-between",
+  },
 }));
 
 const ActiveChat = (props) => {
@@ -29,13 +29,12 @@ const ActiveChat = (props) => {
   let mostRecentMessageFromOtherUser = null;
   // set the most recent message to send to server
   if (conversation.messages) {
-    const sortedMessages = [...conversation.messages]
-      .sort((a, b) => {
-        if (new Date(a.createdAt) > new Date(b.createdAt)) {
-          return -1;
-        }
-        return 1;
-      });
+    const sortedMessages = [...conversation.messages].sort((a, b) => {
+      if (new Date(a.createdAt) > new Date(b.createdAt)) {
+        return -1;
+      }
+      return 1;
+    });
     for (let i = 0; i < sortedMessages.length; i++) {
       let msg = sortedMessages[i];
       if (msg.senderId === conversation.otherUser.id) {
@@ -53,7 +52,12 @@ const ActiveChat = (props) => {
         conversationId: conversation.id,
       });
     }
-  }, [mostRecentMessageFromOtherUser, conversation.id, recordLastMessageSeen, user.id]);
+  }, [
+    mostRecentMessageFromOtherUser,
+    conversation.id,
+    recordLastMessageSeen,
+    user.id,
+  ]);
 
   return (
     <Box className={classes.root}>
@@ -88,8 +92,9 @@ const mapStateToProps = (state) => {
     conversation:
       state.conversations &&
       state.conversations.find(
-        (conversation) => conversation.otherUser.username === state.activeConversation
-      )
+        (conversation) =>
+          conversation.otherUser.username === state.activeConversation
+      ),
   };
 };
 

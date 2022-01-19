@@ -86,8 +86,11 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.put("/", async (req, res, next) => {
+router.put('/readStatus', async (req, res, next) => {
   try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
     const { userIdThatSawMessage, messageId, conversationId } = req.body;
     const conversation = await Conversation.findOne({
       where: { id: conversationId }
@@ -99,12 +102,15 @@ router.put("/", async (req, res, next) => {
         user1UnreadMsgCount: 0,
         user1LastMessageIdSeen: messageId
       });
-    } else {
+    } else if (userIdThatSawMessage === conversation.user2Id) {
       // user 2 saw message
       await conversation.update({
         user2UnreadMsgCount: 0,
         user2LastMessageIdSeen: messageId
       });
+    } else {
+      // user id that saw message is not part of the chat
+      return res.sendStatus(401);
     }
 
     res.json(conversation);

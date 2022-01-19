@@ -17,17 +17,22 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 12,
     color: "#9CADC8",
     letterSpacing: -0.17,
+    fontWeight: "bold" || "regular"
   },
   notification: {
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: theme.typography.fontSize,
     color: "#ffffff",
-    background: "#3f92ff",
+    background: "#3A8DFF",
     borderRadius: 20,
-    marginLeft: 20,
-    textAlign: 'center',
-    padding:  "5px 10px",
+    marginLeft: theme.spacing(2, "auto"),
+    textAlign: theme.spacing(1, "auto"),
+    padding: theme.spacing(1, 3),
     height: 28
+  },
+  latestMsgFont: {
+    fontWeight: "bold",
+    fontSize: 12,
   }
 }));
 
@@ -39,19 +44,24 @@ const ChatContent = (props) => {
 
   return (
     <Box className={classes.root}>
-      <Box>
+      <Box> 
         <Typography className={classes.username}>
           {otherUser.username}
         </Typography>
-        <Typography className={classes.previewText}>
-          {latestMessageText} 
+
+        { unreadMsgCount > 0 ? <Typography className={classes.latestMsgFont}>
+          {latestMessageText}
+          </Typography> 
+          :         <Typography className={classes.previewText}>
+          {latestMessageText}
         </Typography>
+        } 
       </Box>
         
       { unreadMsgCount > 0 && <Box component="span" className={classes.notification}>
         {unreadMsgCount}
-      </Box> }
-    </Box>
+      </Box> } 
+    </Box> 
   );
 };
 

@@ -119,9 +119,8 @@ export const recordLastMessageSeen = (body) => async (dispatch) => {
     // set local unread message count to 0
     dispatch(setUnreadCount(body.conversationId, 0));
     // set unread message count in db
-    const { data } = await axios.put("/api/conversations", body);
+    await axios.put("/api/conversations/readStatus", body);
     sendSawMessage(body);
-    return data;
   } catch (error) {
     console.error(error);
   }

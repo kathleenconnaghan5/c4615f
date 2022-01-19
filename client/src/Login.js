@@ -28,7 +28,6 @@ const Login = (props) => {
   }
 
   return (
-    // changed from justify='center' to justifyConent='center' due to depreciation notice on DevTools Material UI
     <Grid container justifyContent="center">
       <Box>
         <Grid container item>

@@ -6,12 +6,11 @@ const Message = require("./message");
 // associations
 
 User.hasMany(Conversation);
+Conversation.belongsTo(User)
 // Conversation.belongsTo(User, { as: "user1" });
 // Conversation.belongsTo(User, { as: "user2" });
-UserConversation.belongsTo(User, { as: "userId" } );
-UserConversation.belongsTo(Conversation, { as: "conversationId" } )
-Conversation.hasMany(UserConversation);
-User.hasMany(UserConversation);
+User.belongsToMany( Conversation, { through: UserConversation } )
+Conversation.belongsToMany( User, { through: UserConversation } )
 Message.belongsTo(Conversation);
 Conversation.hasMany(Message);
 
@@ -21,3 +20,7 @@ module.exports = {
   Message,
   UserConversation
 };
+
+
+// UserConversation.belongsToMany(User, { as: "userId" } );
+// UserConversation.belongsToMany(Conversation, { as: "conversationId" } )

@@ -8,12 +8,6 @@ export const addMessageToStore = (state, payload) => {
       messages: [message],
     };
     newConvo.latestMessageText = message.text;
-    newConvo.messages.sort((a, b) => {
-      if (new Date(a.createdAt) > new Date(b.createdAt)) {
-        return 1;
-      }
-      return -1;
-     })
     return [...state, newConvo];
   }
 
@@ -23,12 +17,6 @@ export const addMessageToStore = (state, payload) => {
       const newMsgArray = convo.messages.slice();
       newMsgArray.push(message)
       newConvo.messages = newMsgArray
-      newMsgArray.sort((a, b) => {
-        if (new Date(a.createdAt) > new Date(b.createdAt)) {
-          return 1;
-        }
-        return -1;
-       })
       newConvo.latestMessageText = message.text;
       return newConvo;
     } else {
@@ -90,12 +78,7 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       newConvo.id = message.conversationId;
       const newMsgArray = convo.messages.slice();
       newMsgArray.push(message)
-      newConvo.messages = newMsgArray.sort((a, b) => {
-        if (new Date(a.createdAt) > new Date(b.createdAt)) {
-          return 1;
-        }
-        return -1;
-       })
+      newConvo.messages = newMsgArray
       newConvo.latestMessageText = message.text;
       return newConvo;
     } else {
